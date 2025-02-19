@@ -10,7 +10,7 @@ conda_env = os.environ['CONDA_PREFIX']
 
 if len(conda_env) > 0 and len(opencv_inc_dir) == 0 and len(opencv_lib_dir) == 0:
 	print("Detected active conda environment:", conda_env)
-	
+
 	opencv_inc_dir = conda_env + '/include/opencv4'
 	opencv_lib_dir = conda_env + '/lib/opencv4'
 
@@ -28,11 +28,11 @@ if len(opencv_lib_dir) == 0:
 setup(
 	name='dsacstar',
 	ext_modules=[CppExtension(
-		name='dsacstar', 
+		name='dsacstar',
 		sources=['dsacstar.cpp','thread_rand.cpp'],
 		include_dirs=[opencv_inc_dir],
 		library_dirs=[opencv_lib_dir],
 		libraries=['opencv_core','opencv_calib3d'],
 		extra_compile_args=['-fopenmp']
-		)],		
+		)],
 	cmdclass={'build_ext': BuildExtension})

@@ -55,7 +55,7 @@ if __name__ == '__main__':
                         help="Fix poses for the first n training iterations of the final refit.")
     parser.add_argument('--refit_iterations', type=int, default=25000,
                         help='Number of training iterations for the final refit.')
-    parser.add_argument('--registration_confidence', type=int, default=500,
+    parser.add_argument('--registration_confidence', type=int, default=10,
                         help="Consider an image registered if it has this many inlier scene coordinates.")
 
     parser.add_argument('--try_seeds', type=int, default=5,
@@ -131,7 +131,7 @@ if __name__ == '__main__':
                         help='max inplane rotation angle')
     parser.add_argument('--num_data_workers', type=int, default=12,
                         help='number of data loading workers, set according to the number of available CPU cores')
-    parser.add_argument('--training_buffer_cpu', type=_strtobool, default=False, 
+    parser.add_argument('--training_buffer_cpu', type=_strtobool, default=False,
                         help='store training buffer on CPU memory instead of GPU, '
                         'this allows running ACE0 on smaller GPUs, but is slower')
 
@@ -164,7 +164,7 @@ if __name__ == '__main__':
     _logger.info(f"Starting reconstruction of files matching {opt.rgb_files}.")
     reconstruction_start_time = time.time()
 
-    # We warm up the torch.hub cache and make sure the depth estimation model is available 
+    # We warm up the torch.hub cache and make sure the depth estimation model is available
     # before we start the main ACE0 loop (ACE0 uses multiple processes for the initial seed
     # stage and the download should run only once).
     _logger.info(f"Downloading ZoeDepth model from the main process.")
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     if opt.seed_network is not None:
         _logger.info(f"Using pre-trained network as seed: {opt.seed_network}")
         iteration_id = opt.seed_network.stem
-    else:      
+    else:
         # use individual images as seeds, try multiple and choose the one that registers the most images
         np.random.seed(opt.random_seed)
         seeds = np.random.uniform(size=opt.try_seeds)
@@ -211,6 +211,7 @@ if __name__ == '__main__':
             zutil.map_seed((best_seed, seeds[best_seed], opt.rgb_files, opt.results_folder, opt, True, True, True))
 
     _logger.info(f"Registering all images to best seed {iteration_id}.")
+    print(f"{'='*10} before Registering done {'='*10}")
 
     # Register all images to the best seed. Also render visualisation if requested.
     # In some cases, this is redundant - when the dataset is small and the seed scoring already registered all images
